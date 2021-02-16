@@ -9,7 +9,7 @@ import gallery from '/gallery-items.mjs';
     };
     let newLi = [];
     let arrForArrows =[];
-    let currentImg =0;
+    let currentImgIndex =0;
       for (let elem of gallery) {
       let li = document.createElement("li");
       let a = document.createElement("a");
@@ -27,6 +27,9 @@ import gallery from '/gallery-items.mjs';
       arrForArrows.push(elem.original);     
     }
     refs.gallery.append(...newLi);
+    let w = newLi.indexOf(gallery);
+    console.log(newLi);
+    console.log(arrForArrows);
 
     refs.gallery.addEventListener("click", openModal);
     refs.closeModal.addEventListener("click", onCloseModal);
@@ -36,14 +39,11 @@ import gallery from '/gallery-items.mjs';
       event.preventDefault();
       if (event.target.nodeName !== "IMG") {return;}
       refs.modalBox.classList.add("is-open");
-      currentImg = arrForArrows.indexOf(event.target.dataset.source);
-      console.log(currentImg);
       let imageRef = event.target;
       //console.log(imageRef);
       let largeImageURL = imageRef.dataset.source;
       refs.img.src = largeImageURL;
-      window.addEventListener('keydown', keyPress);
-     
+           
     }
 
     function onCloseModal() {
@@ -60,23 +60,19 @@ import gallery from '/gallery-items.mjs';
     window.addEventListener("keydown", keyPress);
 
     function keyPress(event) {
-      //console.log(event.key);
       if (event.key === "Escape") {onCloseModal();}
       if (event.key === "ArrowLeft") {prevImage();}
       if (event.key === "ArrowRight") {nextImage();}
     }
     
     function prevImage() {
-      if (currentImg > 0) {
-        currentImg -= 1;
-      }
-      refs.img.src = gallery[currentImg].original;
+      currentImgIndex = arrForArrows.indexOf(refs.img.src);
+      refs.img.src = currentImgIndex <= 0 ? arrForArrows[arrForArrows.length - 1]: arrForArrows[currentImgIndex - 1];
+    }
+  
+    function nextImage() {
+      currentImgIndex = arrForArrows.indexOf(refs.img.src);
+      refs.img.src = currentImgIndex >= arrForArrows.length - 1 ? arrForArrows[0] : arrForArrows[currentImgIndex + 1];
+       
     }
     
-    function nextImage() {
-      if (currentImg < arrForArrows.length - 1) {
-        currentImg += 1;
-          refs.img.src = gallery[currentImg].original;
-       
-      }
-    }
